@@ -1,31 +1,49 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LineRendererSmoother : MonoBehaviour
 {
 	[SerializeField] private LineRenderer line;
-	[SerializeField] private MeshCollider meshCollider;
-	public Vector2[] InitialState = new Vector2[1];
-	public float SmoothingLength = 2f;
-	public int SmoothingSections = 10;
-
+	[SerializeField] private EdgeCollider2D edgeCollider;
+	[SerializeField] private int precision = 100;
+	[SerializeField] private Vector2[] InitialState = new Vector2[1];
+	[SerializeField] private float SmoothingLength = 2f;
+	[SerializeField] private int SmoothingSections = 10;
+	private Vector2 screenSize;
+	
+	public void InitializeRope()
+	{
+		screenSize = CustomExtensions.GetScreenWorldSize();
+		line.positionCount = precision;
+		Vector3[] positions = new Vector3[100];
+		float yPos = 0;
+		float step = screenSize.y * 2 / 100;
+		for (int i = 0; i < positions.Length; i++)
+		{
+			positions[i].x = 0;
+			positions[i].y = yPos - screenSize.y;
+			yPos += step;
+		}
+		
+		line.SetPositions(positions);
+		GenerateCollider();
+	}
+		
 	public void GenerateCollider()
 	{
-		Mesh mesh = new Mesh();
-		line.BakeMesh(mesh, true);
-
-		int[] meshIndices = mesh.GetIndices(0);
-		int[] newIndices = new int[meshIndices.Length * 2];
-
-		int j = meshIndices.Length - 1;
-		for (int i = 0; i < meshIndices.Length; i++)
+		List<Vector2> edges = new List<Vector2>();
+		
+		for (int i = 0; i < line.positionCount; i++)
 		{
-			newIndices[i] = meshIndices[i];
-			newIndices[meshIndices.Length + i] = meshIndices[j];
+			Vector3 point = line.GetPosition(i);
+			edges.Add(new Vector2(point.x, point.y));
 		}
-		mesh.SetIndices(newIndices, MeshTopology.Triangles, 0);
-
-		meshCollider.sharedMesh = mesh;
+		
+		edgeCollider.SetPoints(edges);
 	}
+
+	
 
 	public void Smooth()
 	{
