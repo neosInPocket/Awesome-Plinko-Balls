@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
+using UnityEditor.Compilation;
 using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -8,7 +11,13 @@ using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 public class RopeController : MonoBehaviour
 {
+	[SerializeField] private LineRenderer lineRenderer;
+	[SerializeField] private EdgeCollider2D edgeCollider;
+	[SerializeField] private int ropePrecision;
 	[SerializeField] private float bendRadius;
+	[SerializeField] private float bendStrength;
+	[SerializeField] private Transform player;
+	[SerializeField] private float ropeSpawnThreshold;
 	
 	public bool Enabled 
 	{
@@ -30,18 +39,38 @@ public class RopeController : MonoBehaviour
 	}
 	
 	private bool isEnabled;
-	private LineRenderer lineRenderer;
-	private LineRendererSmoother lineRendererSmoother;
+	
+	private Vector2 screenSize;
 	private Vector2 startBendPosition;
 	private Vector3[] currentRopePoints;
 	
 	private void Start()
 	{
-		GetDependencies();
-		lineRendererSmoother.InitializeRope();
-		currentRopePoints = new Vector3[lineRenderer.positionCount];
+		EnhancedTouchSupport.Enable();
+		TouchSimulation.Enable();
 		
-		Enabled = true;
+		screenSize = CustomExtensions.GetScreenWorldSize();
+		lineRenderer.positionCount = ropePrecision;
+		
+		InitializeRope();
+	}
+	
+	private void Update()
+	{
+		if (!isEnabled) return;
+		
+		if (player.position.y + screenSize.y >= lineRenderer.GetPosition(lineRenderer.positionCount - 1).y)
+		{
+			currentRopePoints[lineRenderer.positionCount - 1] = new Vector2(0, lineRenderer.GetPosition(lineRenderer.positionCount - 1).y + ropeSpawnThreshold);
+			
+			for (int i = lineRenderer.positionCount - 2; i >= 0; i--)
+			{
+				currentRopePoints[i] = lineRenderer.GetPosition(i + 1);
+			}
+			
+			lineRenderer.SetPositions(currentRopePoints);
+			GenerateCollider();
+		}
 	}
 	
 	private void OnFingerDownHandler(Finger finger)
@@ -56,54 +85,68 @@ public class RopeController : MonoBehaviour
 	
 	private void UpdateRopePoints(Vector2 fingerMovePosition)
 	{
-		Vector2 closestPoint = GetClosestPoint(fingerMovePosition);
+		int direction = 0;
 		
-		float bendStrength = fingerMovePosition.x - startBendPosition.x;
-		Debug.Log(bendStrength);
-	
+		if (fingerMovePosition.x - startBendPosition.x > 0)
+		{
+			direction = 1;
+		}
+		else
+		{
+			direction = -1;
+		}
+		
 		for (int i = 0; i < lineRenderer.positionCount; i++)
 		{
 			var point = lineRenderer.GetPosition(i);
+			var bendValue = Mathf.Exp(-Mathf.Pow(point.y - fingerMovePosition.y, 2) / (2 * bendRadius * bendRadius));
 			
-			point.x += bendStrength * Mathf.Exp(-Mathf.Pow(point.y - fingerMovePosition.y / 4, 2) / (2 * bendRadius * bendRadius));
+			point.x += direction * bendStrength * bendValue;
+			//* Mathf.Abs(Mathf.Abs(point.x) - screenSize.x) / screenSize.x;
+			
 			currentRopePoints[i] = point;
 		}
+		startBendPosition = fingerMovePosition;
 		
 		lineRenderer.SetPositions(currentRopePoints);
-		lineRendererSmoother.GenerateCollider();
-	}
-	
-	private Vector2 GetClosestPoint(Vector2 touchPosition)
-	{
-		Vector2[] points = new Vector2[lineRenderer.positionCount];
-		float maxDistance = 0;
-		Vector2 maxPoint = touchPosition;
-		
-		for (int i = 0; i < lineRenderer.positionCount; i++)
-		{
-			points[i] = lineRenderer.GetPosition(i);
-			float distance = Vector2.Distance(touchPosition, points[i]);
-			if (distance > maxDistance)
-			{
-				maxPoint = points[i];
-				maxDistance = distance;
-			}
-		}
-		
-		return maxPoint;
-	}
-	
-	private void GetDependencies()
-	{
-		EnhancedTouchSupport.Enable();
-		TouchSimulation.Enable();
-		
-		lineRenderer = GetComponent<LineRenderer>();
-		lineRendererSmoother = GetComponent<LineRendererSmoother>();
+		GenerateCollider();
 	}
 	
 	private void OnDestroy()
 	{
 		Enabled = false;
+	}
+	
+	public void InitializeRope()
+	{
+		Vector3[] positions = new Vector3[ropePrecision];
+		
+		float step = 2 * screenSize.y / (ropePrecision - 4);
+		float yPos = - 2 * screenSize.y / ropePrecision;
+		
+		for (int i = 0; i < positions.Length; i++)
+		{
+			positions[i].x = 0;
+			positions[i].y = yPos - screenSize.y;
+			yPos += step;
+		}
+		
+		ropeSpawnThreshold = step;
+		lineRenderer.SetPositions(positions);
+		currentRopePoints = positions;
+		GenerateCollider();
+	}
+		
+	public void GenerateCollider()
+	{
+		List<Vector2> edges = new List<Vector2>();
+		
+		for (int i = 0; i < lineRenderer.positionCount; i++)
+		{
+			Vector3 point = lineRenderer.GetPosition(i);
+			edges.Add(new Vector2(point.x, point.y));
+		}
+		
+		edgeCollider.SetPoints(edges);
 	}
 }

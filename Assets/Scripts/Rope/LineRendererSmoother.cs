@@ -12,36 +12,7 @@ public class LineRendererSmoother : MonoBehaviour
 	[SerializeField] private int SmoothingSections = 10;
 	private Vector2 screenSize;
 	
-	public void InitializeRope()
-	{
-		screenSize = CustomExtensions.GetScreenWorldSize();
-		line.positionCount = precision;
-		Vector3[] positions = new Vector3[100];
-		float yPos = 0;
-		float step = screenSize.y * 2 / 100;
-		for (int i = 0; i < positions.Length; i++)
-		{
-			positions[i].x = 0;
-			positions[i].y = yPos - screenSize.y;
-			yPos += step;
-		}
-		
-		line.SetPositions(positions);
-		GenerateCollider();
-	}
-		
-	public void GenerateCollider()
-	{
-		List<Vector2> edges = new List<Vector2>();
-		
-		for (int i = 0; i < line.positionCount; i++)
-		{
-			Vector3 point = line.GetPosition(i);
-			edges.Add(new Vector2(point.x, point.y));
-		}
-		
-		edgeCollider.SetPoints(edges);
-	}
+	
 
 	
 
