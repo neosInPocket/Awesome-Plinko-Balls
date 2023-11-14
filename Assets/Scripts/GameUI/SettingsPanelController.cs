@@ -7,6 +7,7 @@ public class SettingsPanelController : MonoBehaviour
 {
 	[SerializeField] private Slider musicVolumeSlider;
 	[SerializeField] private AudioSource musicAudio;
+	[SerializeField] private Toggle musicToggle;
 	
 	private void Start()
 	{
@@ -16,6 +17,15 @@ public class SettingsPanelController : MonoBehaviour
 		if (musicVolumeSlider != null)
 		{
 			musicVolumeSlider.value = PlayerSaves.volume;
+		}
+		
+		if (PlayerSaves.isVolumeEnabled == 0)
+		{
+			musicAudio.enabled = false;
+			if (musicToggle != null)
+			{
+				musicToggle.isOn = false;
+			}
 		}
 	}
 	
@@ -28,5 +38,20 @@ public class SettingsPanelController : MonoBehaviour
 	{
 		PlayerSaves.volume = musicAudio.volume;
 		PlayerSaves.SaveSaves();
+	}
+	
+	public void ToggleVolume(bool value)
+	{
+		musicAudio.enabled = value;
+		if (value)
+		{
+			PlayerSaves.isVolumeEnabled = 1;
+			PlayerSaves.SaveSaves();
+		}
+		else
+		{
+			PlayerSaves.isVolumeEnabled = 0;
+			PlayerSaves.SaveSaves();
+		}
 	}
 }

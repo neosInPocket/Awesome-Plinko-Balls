@@ -10,5 +10,9 @@ public class LoadMusic : MonoBehaviour
 	{
 		PlayerSaves.LoadSaves();
 		audioSource.volume = PlayerSaves.volume;
+		if (PlayerSaves.isVolumeEnabled == 0)
+		{
+			audioSource.enabled = false;
+		}
 	}
 }

@@ -11,6 +11,10 @@ public class ShopContainerController : MonoBehaviour
 	[SerializeField] private List<Image> healthImages;
 	[SerializeField] private Button healthButton;
 	[SerializeField] private Button gravityButton;
+	[SerializeField] private Button gravityChooseButton;
+	[SerializeField] private Button lifesChooseButton;
+	[SerializeField] private GameObject lifesContainer;
+	[SerializeField] private GameObject gravityContainer;
 	
 	
 	
@@ -82,5 +86,21 @@ public class ShopContainerController : MonoBehaviour
 	private void Start()
 	{
 		UpdateShopSettings();
+	}
+	
+	public void ChooseGravity()
+	{
+		gravityChooseButton.interactable = false;
+		lifesChooseButton.interactable = true;
+		gravityContainer.gameObject.SetActive(true);
+		lifesContainer.gameObject.SetActive(false);
+	}
+	
+	public void ChooseLifes()
+	{
+		lifesChooseButton.interactable = false;
+		gravityChooseButton.interactable = true;
+		gravityContainer.gameObject.SetActive(false);
+		lifesContainer.gameObject.SetActive(true);
 	}
 }
