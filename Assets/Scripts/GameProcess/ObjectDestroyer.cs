@@ -6,7 +6,7 @@ public class ObjectDestroyer : MonoBehaviour
 	
 	private void Start()
 	{
-		var screenSize = CustomExtensions.GetScreenWorldSize();
+		var screenSize = CustomExtensions.screenSize;
 		spriteRenderer.size = new Vector2(screenSize.x * 2, spriteRenderer.size.y);
 		transform.localPosition = new Vector2(0, -screenSize.y);
 	}

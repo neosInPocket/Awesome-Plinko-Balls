@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
 	
 	public void Initialize()
 	{
+		StopAllCoroutines();
 		PlayerSaves.LoadSaves();
 		currentLifes = PlayerSaves.lifes;
 		movement.Initialize();
@@ -93,9 +94,9 @@ public class PlayerController : MonoBehaviour
 		while (pointer < 10)
 		{
 			spriteRenderer.color = new Color(1, 1, 1, 0);
-			yield return new WaitForSeconds(0.25f);
+			yield return new WaitForSeconds(0.15f);
 			spriteRenderer.color = new Color(1, 1, 1, 1);
-			yield return new WaitForSeconds(0.25f);
+			yield return new WaitForSeconds(0.15f);
 			pointer++;
 		}
 		

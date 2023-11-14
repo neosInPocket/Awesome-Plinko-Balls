@@ -11,7 +11,7 @@ public class RotatingSpike : MonoBehaviour
 	
 	public void Init(float playerPosY, float obstacleSpawnDistance)
 	{
-		var screenSize = CustomExtensions.GetScreenWorldSize();
+		var screenSize = CustomExtensions.screenSize;
 		
 		var size = Random.Range(spriteSizes.x, spriteSizes.y);
 		spriteRenderer.size = new Vector2(size, size);

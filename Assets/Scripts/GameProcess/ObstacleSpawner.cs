@@ -17,7 +17,7 @@ public class ObstacleSpawner : MonoBehaviour
 	public void Init()
 	{
 		Delete();
-		screenSize = CustomExtensions.GetScreenWorldSize();
+		screenSize = CustomExtensions.screenSize;
 		lastObstacle = lastSpike;
 	}
 	

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.EnhancedTouch;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -33,6 +34,30 @@ public class PlayerMovement : MonoBehaviour
 	
 	private void Start()
 	{
+		PlayerSaves.LoadSaves();
+		
+		switch (PlayerSaves.ballGravity)
+		{
+			case 0:
+			Physics2D.gravity = new Vector2(9.81f / 4, 0);
+			break;
+			
+			case 1:
+			Physics2D.gravity = new Vector2(9.81f / 3, 0);
+			break;
+			
+			case 2:
+			Physics2D.gravity = new Vector2(9.81f / 2, 0);
+			break;
+			
+			case 3:
+			Physics2D.gravity = new Vector2(9.81f, 0);
+			break;
+		}
+		
+		EnhancedTouchSupport.Enable();
+		TouchSimulation.Enable();
+		
 		Initialize();
 	}
 	

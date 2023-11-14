@@ -1,10 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using UnityEditor.Compilation;
-using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
@@ -49,7 +44,7 @@ public class RopeController : MonoBehaviour
 		EnhancedTouchSupport.Enable();
 		TouchSimulation.Enable();
 		
-		screenSize = CustomExtensions.GetScreenWorldSize();
+		screenSize = CustomExtensions.screenSize;
 		lineRenderer.positionCount = ropePrecision;
 		
 		InitializeRope();
@@ -121,7 +116,7 @@ public class RopeController : MonoBehaviour
 	{
 		Vector3[] positions = new Vector3[ropePrecision];
 		
-		float step = 2 * screenSize.y / (ropePrecision - 4);
+		float step = 2 * screenSize.y / (ropePrecision - 8);
 		float yPos = - 2 * screenSize.y / ropePrecision;
 		
 		for (int i = 0; i < positions.Length; i++)

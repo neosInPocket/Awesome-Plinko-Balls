@@ -11,13 +11,13 @@ public class GameBorders : MonoBehaviour
 	
 	private void Start()
 	{
-		var screenSize = CustomExtensions.GetScreenWorldSize();
+		var screenSize = CustomExtensions.screenSize;
 		
 		leftBorder.size = new Vector2(leftBorder.size.x, screenSize.y * 2);
-		leftBorder.transform.localPosition = new Vector2(-screenSize.x - leftBorder.size.x / 2, 0);
+		leftBorder.transform.position = new Vector2(-screenSize.x - leftBorder.size.x / 2, 0);
 		
 		rightBorder.size = new Vector2(rightBorder.size.x, screenSize.y * 2);
-		rightBorder.transform.localPosition = new Vector2(screenSize.x + leftBorder.size.x / 2, 0);
+		rightBorder.transform.position = new Vector2(screenSize.x + leftBorder.size.x / 2, 0);
 		
 		InitializeZone(screenSize);
 	}
