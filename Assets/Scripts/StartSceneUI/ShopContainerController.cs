@@ -68,7 +68,7 @@ public class ShopContainerController : MonoBehaviour
 		PlayerSaves.coins -= 100;
 		PlayerSaves.lifes++;
 		PlayerSaves.SaveSaves();
-		CheckPoints();
+		CheckButtons();
 		CheckHealthPoints();
 		coins.text = PlayerSaves.coins.ToString();
 	}

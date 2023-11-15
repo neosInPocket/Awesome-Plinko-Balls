@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private Rigidbody2D rigid;
 	[SerializeField] private Transform startPosition;
 	[SerializeField] private RopeController ropeController;
+	[SerializeField] private AudioSource ballSource;
 	
 	[SerializeField] private TrailRenderer trailRenderer;
 	private bool isGrounded;
@@ -74,6 +75,7 @@ public class PlayerMovement : MonoBehaviour
 		if (collision.gameObject.TryGetComponent<RopeController>(out RopeController rope))
 		{
 			isGrounded = true;
+			ballSource.Play();
 		}
 	}
 	
