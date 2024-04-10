@@ -54,7 +54,7 @@ public class PlayerSaves : MonoBehaviour
 	public static void LoadCurrentParameters()
 	{
 		lifesCounUpgrade = PlayerPrefs.GetInt("lifesCountUpgrade", 1);
-		coinsCollected = PlayerPrefs.GetInt("coinsCollected", 100);
+		coinsCollected = PlayerPrefs.GetInt("coinsCollected", 0);
 		gravityUpdate = PlayerPrefs.GetInt("gravityUpdate", 0);
 		levelsPassed = PlayerPrefs.GetInt("levelsPassed", 1);
 		volumeMusic = PlayerPrefs.GetInt("volumeMusic", 1);

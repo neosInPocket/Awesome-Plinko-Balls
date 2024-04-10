@@ -23,7 +23,7 @@ public class TutWindow : MonoBehaviour
 	{
 		Touch.onFingerDown -= RedSpikes;
 		Touch.onFingerDown += RopeControl;
-		dialog.text = "WELCOME TO NEW GAME! Don't let your ball touch the red spikes";
+		dialog.text = "WELCOME TO Limko Magic Way! Don't let your ball touch the red spikes";
 	}
 
 	private void RopeControl(Finger finger)
