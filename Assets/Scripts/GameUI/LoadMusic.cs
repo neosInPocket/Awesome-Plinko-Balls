@@ -1,18 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class LoadMusic : MonoBehaviour
 {
-	[SerializeField] private AudioSource audioSource;
-	
+	[SerializeField] private AudioSource musicCurrent;
+	public float Volume
+	{
+		get => musicCurrent.volume;
+		set => musicCurrent.volume = value;
+	}
+
+	private void Awake()
+	{
+		LoadMusic[] musicsFound = FindObjectsByType<LoadMusic>(sortMode: FindObjectsSortMode.None);
+		var length = musicsFound.Length == 1;
+
+		if (!length)
+		{
+			var foundOneMusic = musicsFound.FirstOrDefault(x => x.gameObject.scene.name != "DontDestroyOnLoad");
+			Destroy(foundOneMusic.gameObject);
+		}
+		else
+		{
+			DontDestroyOnLoad(gameObject);
+		}
+	}
+
 	private void Start()
 	{
-		PlayerSaves.LoadSaves();
-		audioSource.volume = PlayerSaves.volume;
-		if (PlayerSaves.isVolumeEnabled == 0)
+		musicCurrent.volume = PlayerSaves.simpleVolume;
+		if (PlayerSaves.volumeMusic != 0)
 		{
-			audioSource.enabled = false;
+		}
+		else
+		{
+			musicCurrent.enabled = true;
 		}
 	}
 }

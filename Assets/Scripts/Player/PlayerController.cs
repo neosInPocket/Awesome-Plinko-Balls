@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -12,60 +9,60 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private GameObject criticalDamageEffect;
 	[SerializeField] private RopeController ropeController;
 	private int currentLifes;
-	
-	public void Initialize()
+
+	public void InitializePlayer()
 	{
 		StopAllCoroutines();
-		PlayerSaves.LoadSaves();
-		currentLifes = PlayerSaves.lifes;
+		PlayerSaves.LoadCurrentParameters();
+		currentLifes = PlayerSaves.lifesCounUpgrade;
 		movement.Initialize();
-		
+
 		spriteRenderer.color = new Color(1, 1, 1, 1);
-		ropeController.InitializeRope();
+		ropeController.SetInitialRope();
 	}
-	
-	public void GoPlay()
+
+	public void StartPlayer()
 	{
 		movement.Enabled = true;
 		ropeController.Enabled = true;
 	}
-	
-	public void Disable()
+
+	public void SetDisactiveState()
 	{
 		movement.Enabled = false;
 		ropeController.Enabled = false;
 	}
-	
-	private void OnTriggerEnter2D(Collider2D collider)
+
+	private void OnTriggerEnter2D(Collider2D objectCollider)
 	{
-		if (collider.TryGetComponent<CoinRenderer>(out CoinRenderer coin))
+		if (objectCollider.TryGetComponent<CoinRenderer>(out CoinRenderer coin))
 		{
 			if (coin.dead) return;
 			coin.dead = true;
 			StartCoroutine(coin.Pop());
-			routine.PlayerCoin();
+			routine.CoinGained();
 		}
-		
-		if (collider.TryGetComponent<RotatingSpike>(out RotatingSpike spike))
+
+		if (objectCollider.TryGetComponent<RotatingSpike>(out RotatingSpike spike))
 		{
-			TakeDamage();
+			Damaged();
 		}
 	}
-	
-	private void OnCollisionEnter2D(Collision2D collision2D)
+
+	private void OnCollisionEnter2D(Collision2D collider)
 	{
-		if (collision2D.transform.parent.TryGetComponent<GameBorders>(out GameBorders GameBorders))
+		if (collider.transform.parent.TryGetComponent<GameBorders>(out GameBorders GameBorders))
 		{
-			TakeDamage();
+			Damaged();
 		}
 	}
-	
-	
-	private void TakeDamage()
+
+
+	private void Damaged()
 	{
 		currentLifes--;
-		routine.PlayerDamage(currentLifes);
-		
+		routine.DamagedPlayer(currentLifes);
+
 		if (currentLifes <= 0)
 		{
 			currentLifes = 0;
@@ -78,7 +75,7 @@ public class PlayerController : MonoBehaviour
 			StartCoroutine(TakePartialDamage());
 		}
 	}
-	
+
 	private IEnumerator TakeCriticalDamageRoutine()
 	{
 		spriteRenderer.color = new Color(1, 1, 1, 0);
@@ -86,11 +83,11 @@ public class PlayerController : MonoBehaviour
 		yield return new WaitForSeconds(1f);
 		Destroy(effect.gameObject);
 	}
-	
+
 	private IEnumerator TakePartialDamage()
 	{
 		int pointer = 0;
-		
+
 		while (pointer < 10)
 		{
 			spriteRenderer.color = new Color(1, 1, 1, 0);
@@ -99,6 +96,6 @@ public class PlayerController : MonoBehaviour
 			yield return new WaitForSeconds(0.15f);
 			pointer++;
 		}
-		
+
 	}
 }

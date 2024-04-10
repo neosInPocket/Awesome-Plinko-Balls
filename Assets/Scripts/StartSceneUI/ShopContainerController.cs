@@ -6,101 +6,106 @@ using UnityEngine.UI;
 
 public class ShopContainerController : MonoBehaviour
 {
-	[SerializeField] private TMP_Text coins;
-	[SerializeField] private List<Image> gravityImages;
-	[SerializeField] private List<Image> healthImages;
-	[SerializeField] private Button healthButton;
-	[SerializeField] private Button gravityButton;
-	[SerializeField] private Button gravityChooseButton;
-	[SerializeField] private Button lifesChooseButton;
-	[SerializeField] private GameObject lifesContainer;
-	[SerializeField] private GameObject gravityContainer;
-	
-	
-	
-	public void UpdateShopSettings()
+	[SerializeField] private TMP_Text coinsCurrentCollectedText;
+	[SerializeField] private List<Image> pointsForGravityUpgrade;
+	[SerializeField] private List<Image> pointsForHealthUpgrade;
+	[SerializeField] private Button healthUpgradeToggle;
+	[SerializeField] private Button gravityUpgradeToggle;
+	[SerializeField] private Button gravitySetButton;
+	[SerializeField] private Button lifesSetButton;
+	[SerializeField] private GameObject containerForLifes;
+	[SerializeField] private GameObject containerForGravity;
+	[SerializeField] private CoinsCapturer coinsCapturer;
+
+	public void SetDefaultStoreSettings()
 	{
-		PlayerSaves.LoadSaves();
-		coins.text = PlayerSaves.coins.ToString();
-		CheckButtons();
-		CheckPoints();
+		coinsCurrentCollectedText.text = PlayerSaves.coinsCollected.ToString();
+
+		coinsCapturer.RestartCoins();
+		SetButtonsValues();
+		SetPointsValues();
 	}
-	
-	public void CheckButtons()
+
+	public void SetButtonsValues()
 	{
-		if (PlayerSaves.coins - 50 < 0 || PlayerSaves.ballGravity == 3)
+		if (PlayerSaves.coinsCollected - 50 < 0 || PlayerSaves.gravityUpdate == 3)
 		{
-			gravityButton.interactable = false;
+			gravityUpgradeToggle.interactable = false;
 		}
-		
-		if (PlayerSaves.coins - 100 < 0 || PlayerSaves.lifes == 3)
+
+		if (PlayerSaves.coinsCollected - 100 < 0 || PlayerSaves.lifesCounUpgrade == 3)
 		{
-			healthButton.interactable = false;
-		}
-	}
-	
-	public void CheckPoints()
-	{
-		CheckGravityPoints();
-		CheckHealthPoints();
-	}
-	
-	private void CheckHealthPoints()
-	{
-		for (int i = 0; i < PlayerSaves.lifes; i++)
-		{
-			if (healthImages[i].gameObject.activeSelf) continue;
-			healthImages[i].gameObject.SetActive(true);
+			healthUpgradeToggle.interactable = false;
 		}
 	}
-	
-	private void CheckGravityPoints()
+
+	public void SetPointsValues()
 	{
-		for (int i = 0; i < PlayerSaves.ballGravity; i++)
+		coinsCapturer.RestartCoins();
+		SetPointsForGravity();
+		SetPointsFotHealth();
+	}
+
+	public virtual void SetPointsFotHealth()
+	{
+		for (int i = 0; i < PlayerSaves.lifesCounUpgrade; i++)
 		{
-			if (gravityImages[i].gameObject.activeSelf) continue;
-			gravityImages[i].gameObject.SetActive(true);
+			if (pointsForHealthUpgrade[i].gameObject.activeSelf) continue;
+			pointsForHealthUpgrade[i].gameObject.SetActive(true);
 		}
 	}
-	
-	public void UpgradeLifes()
+
+	public virtual void SetPointsForGravity()
 	{
-		PlayerSaves.coins -= 100;
-		PlayerSaves.lifes++;
-		PlayerSaves.SaveSaves();
-		CheckButtons();
-		CheckHealthPoints();
-		coins.text = PlayerSaves.coins.ToString();
+		for (int i = 0; i < PlayerSaves.gravityUpdate; i++)
+		{
+			if (pointsForGravityUpgrade[i].gameObject.activeSelf) continue;
+			pointsForGravityUpgrade[i].gameObject.SetActive(true);
+		}
 	}
-	
-	public void UpgradeGravity()
+
+	public void PurchaseLifesOne()
 	{
-		PlayerSaves.coins -= 50;
-		PlayerSaves.ballGravity++;
-		PlayerSaves.SaveSaves();
-		CheckGravityPoints();
-		CheckButtons();
-		coins.text = PlayerSaves.coins.ToString();
+		PlayerSaves.lifesCounUpgrade++;
+		PlayerSaves.coinsCollected -= 100;
+
+		PlayerSaves.SaveCurrentParameters();
+		SetButtonsValues();
+		SetPointsFotHealth();
+		coinsCapturer.RestartCoins();
+		coinsCurrentCollectedText.text = PlayerSaves.coinsCollected.ToString();
 	}
-	
+
+	public void PurchaseGravityOne()
+	{
+		PlayerSaves.gravityUpdate++;
+		PlayerSaves.coinsCollected -= 50;
+
+		PlayerSaves.SaveCurrentParameters();
+		SetPointsForGravity();
+		SetButtonsValues();
+		coinsCapturer.RestartCoins();
+		coinsCurrentCollectedText.text = PlayerSaves.coinsCollected.ToString();
+	}
+
 	private void Start()
 	{
-		UpdateShopSettings();
+		SetDefaultStoreSettings();
 	}
-	
-	public void ChooseGravity()
+
+	public void SetGravityUpgradeActive()
 	{
-		gravityChooseButton.interactable = false;
-		lifesChooseButton.interactable = true;
-		gravityContainer.gameObject.SetActive(true);
-		lifesContainer.gameObject.SetActive(false);
+		gravitySetButton.interactable = false;
+		lifesSetButton.interactable = true;
+		containerForGravity.gameObject.SetActive(true);
+		containerForLifes.gameObject.SetActive(false);
 	}
-	
-	public void ChooseLifes()
+
+	public void SetLifesUpgradeActive()
 	{
-		lifesChooseButton.interactable = false;
-		gravityChooseButton.interactable = true;
-		gravityContainer.gameObject.SetActive(false);
-		lifesContainer.gameObject.SetActive(true);
+		lifesSetButton.interactable = false;
+		gravitySetButton.interactable = true;
+		containerForGravity.gameObject.SetActive(false);
+		containerForLifes.gameObject.SetActive(true);
 	}
 }

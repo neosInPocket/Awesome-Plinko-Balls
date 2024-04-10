@@ -1,57 +1,61 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SettingsPanelController : MonoBehaviour
 {
-	[SerializeField] private Slider musicVolumeSlider;
-	[SerializeField] private AudioSource musicAudio;
-	[SerializeField] private Toggle musicToggle;
-	
+	[SerializeField] private Slider slider;
+	[SerializeField] private Toggle musicToggleButton;
+	private LoadMusic loadMusic;
+	private AudioSource musicAudioVolume;
+	private float prevValue;
+
 	private void Start()
 	{
-		PlayerSaves.LoadSaves();
-		
-		musicAudio.volume = PlayerSaves.volume;
-		if (musicVolumeSlider != null)
+		loadMusic = FindFirstObjectByType<LoadMusic>();
+		musicAudioVolume = loadMusic.GetComponent<AudioSource>();
+
+		musicAudioVolume.volume = PlayerSaves.simpleVolume;
+		if (slider != null)
 		{
-			musicVolumeSlider.value = PlayerSaves.volume;
+			slider.value = PlayerSaves.simpleVolume;
 		}
-		
-		if (PlayerSaves.isVolumeEnabled == 0)
+
+		if (PlayerSaves.volumeMusic == 0)
 		{
-			musicAudio.enabled = false;
-			if (musicToggle != null)
+			musicAudioVolume.enabled = false;
+			if (musicToggleButton != null)
 			{
-				musicToggle.isOn = false;
+				musicToggleButton.isOn = false;
 			}
 		}
 	}
-	
-	public void SetMusicVolumeSlider(float musicVolume)
+
+	public void SetMusicVolumeCurrent(float musicVolume)
 	{
-		musicAudio.volume = musicVolume;
+		musicAudioVolume.volume = musicVolume;
 	}
-	
-	public void Save()
+
+	public void SaveVolumeCurrent()
 	{
-		PlayerSaves.volume = musicAudio.volume;
-		PlayerSaves.SaveSaves();
+		PlayerSaves.simpleVolume = musicAudioVolume.volume == 1f ? 1 : 0;
+		PlayerSaves.SaveCurrentParameters();
 	}
-	
-	public void ToggleVolume(bool value)
+
+	public void ToggleVolumeValues(bool value)
 	{
-		musicAudio.enabled = value;
+		if (!value) prevValue = musicAudioVolume.volume;
+
+		musicAudioVolume.volume = value ? prevValue : 0f;
+
 		if (value)
 		{
-			PlayerSaves.isVolumeEnabled = 1;
-			PlayerSaves.SaveSaves();
+			PlayerSaves.volumeMusic = 1;
+			PlayerSaves.SaveCurrentParameters();
 		}
 		else
 		{
-			PlayerSaves.isVolumeEnabled = 0;
-			PlayerSaves.SaveSaves();
+			PlayerSaves.volumeMusic = 0;
+			PlayerSaves.SaveCurrentParameters();
 		}
 	}
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -7,56 +5,59 @@ using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 public class TutWindow : MonoBehaviour
 {
-	[SerializeField] private TMP_Text characterDialogText;
-	[SerializeField] private Routine routine;
-	
-	private void Start()
+	[SerializeField] private TMP_Text dialog;
+	[SerializeField] private Routine route;
+
+	private void Awake()
 	{
 		EnhancedTouchSupport.Enable();
 		TouchSimulation.Enable();
-		
-		Touch.onFingerDown += OnFingerDown1;
 	}
-	
-	private void OnFingerDown1(Finger finger)
+
+	public void StartTutorialRoutine()
 	{
-		Touch.onFingerDown -= OnFingerDown1;
-		Touch.onFingerDown += OnFingerDown2;
-		characterDialogText.text = "Don't let your ball touch the red spikes";
+		Touch.onFingerDown += RedSpikes;
 	}
-	
-	private void OnFingerDown2(Finger finger)
+
+	private void RedSpikes(Finger finger)
 	{
-		Touch.onFingerDown -= OnFingerDown2;
-		Touch.onFingerDown += OnFingerDown3;
-		characterDialogText.text = "To do this, control the taut rope, guiding the constantly moving ball";
+		Touch.onFingerDown -= RedSpikes;
+		Touch.onFingerDown += RopeControl;
+		dialog.text = "WELCOME TO NEW GAME! Don't let your ball touch the red spikes";
 	}
-	
-	private void OnFingerDown3(Finger finger)
+
+	private void RopeControl(Finger finger)
 	{
-		Touch.onFingerDown -= OnFingerDown3;
-		Touch.onFingerDown += OnFingerDown4;
-		characterDialogText.text = "Also, don't overdo the rope bending as this may cause you to touch the edges of the screen and you will take damage";
+		Touch.onFingerDown -= RopeControl;
+		Touch.onFingerDown += ScreenDamage;
+		dialog.text = "ALL YOU NEED TO DO IS SIMPLY CONTROL the taut rope BY HOLDING THE SCREEN";
 	}
-	
-	private void OnFingerDown4(Finger finger)
+
+	private void ScreenDamage(Finger finger)
 	{
-		Touch.onFingerDown -= OnFingerDown4;
-		Touch.onFingerDown += OnFingerDown5;
-		characterDialogText.text = "Collect coins, complete levels and receive rewards for which you can buy various upgrades in shop";
+		Touch.onFingerDown -= ScreenDamage;
+		Touch.onFingerDown += RecieveRewards;
+		dialog.text = "BE CAREFUL AND DON'T OVERDO THE ROPE! IF YOUR BALL FLYES OFF THE SCREEN YOU WILL LOSE";
 	}
-	
-	private void OnFingerDown5(Finger finger)
+
+	private void RecieveRewards(Finger finger)
 	{
-		Touch.onFingerDown -= OnFingerDown5;
-		Touch.onFingerDown += OnFingerDown6;
-		characterDialogText.text = "Good luck!";
+		Touch.onFingerDown -= RecieveRewards;
+		Touch.onFingerDown += GoodLuck;
+		dialog.text = "COMPLETE LEVELS COLLECTING A CERTAIN NUMBER OF COINS. EACH LEVEL HAS A REWARD FOR WHICH YOU CAN BUY VARIOUS IMPROVEMENTS IN THE STORE";
 	}
-	
-	private void OnFingerDown6(Finger finger)
+
+	private void GoodLuck(Finger finger)
 	{
-		Touch.onFingerDown -= OnFingerDown6;
-		routine.PlayCount();
+		Touch.onFingerDown -= GoodLuck;
+		Touch.onFingerDown += RoutineEnd;
+		dialog.text = "Good luck!";
+	}
+
+	private void RoutineEnd(Finger finger)
+	{
+		Touch.onFingerDown -= RoutineEnd;
+		route.PlayCountDownCurrent();
 		gameObject.SetActive(false);
 	}
 }

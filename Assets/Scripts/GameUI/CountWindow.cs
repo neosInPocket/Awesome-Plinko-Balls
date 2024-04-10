@@ -5,10 +5,10 @@ using UnityEngine;
 public class CountWindow : MonoBehaviour
 {
 	[SerializeField] private Routine routine;
-	
+
 	public void PlayRoutine()
 	{
 		gameObject.SetActive(false);
-		routine.PlayRoutine();
+		routine.StartLevelCurrent();
 	}
 }

@@ -1,18 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class CustomExtensions
 {
-	public static Vector2 screenSize;
-	
+	public static Vector2 sizeOfTheScreen;
+
 	static CustomExtensions()
 	{
-		screenSize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+		sizeOfTheScreen = new Vector2(Camera.main.orthographicSize * Camera.main.aspect, Camera.main.orthographicSize);
 	}
-		
-	public static Vector2 ScreenVector2ToWorld(Vector2 screenVector)
+
+	public static Vector2 ScreenPointFromWorldPoint(Vector2 screen)
 	{
-		return Camera.main.ScreenToWorldPoint(screenVector);
+		screen.x /= Screen.width * sizeOfTheScreen.x;
+		screen.y /= Screen.height * sizeOfTheScreen.y;
+		screen += (Vector2)Camera.main.transform.position;
+		return screen;
 	}
 }
